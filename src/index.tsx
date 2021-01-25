@@ -3,11 +3,17 @@ import ReactDOM from 'react-dom';
 import './css/index.css';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
+// eslint-disable-next-line
+import reducer from './store/reducer';
+// eslint-disable-next-line
+import { Provider } from 'react-redux';
+// eslint-disable-next-line
+import { createStore } from 'redux';
+
+const store = createStore(reducer);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={store}><App /></Provider>,
   document.getElementById('root')
 );
 

@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -13,14 +15,20 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.center {
   align-items: center;
+  min-height: 100vh;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-top: 32px;
+  margin-bottom: 20px;
+  margin-left: 30px;
   color: white;
 }
 
@@ -32,6 +40,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

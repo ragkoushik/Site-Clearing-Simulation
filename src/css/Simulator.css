@@ -1,0 +1,65 @@
+.simulator {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+    overflow: hidden;
+    border-radius: 25px;
+    border: 2px solid antiquewhite;
+}
+
+.site {
+    background-color: antiquewhite;
+    overflow: hidden;
+    border-radius: 25px;
+    margin-bottom: 20px;
+}
+
+.command {
+    overflow: hidden;
+    border-radius: 25px;
+    max-height: 300px;
+}
+
+.MuiTableCell-root {
+    display: table-cell;
+    padding: 0px !important;
+    font-size: 0.875rem;
+    text-align: left;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    line-height: 1.43;
+    border: 1px solid rgba(224, 224, 224, 1);
+    letter-spacing: 0.01071em;
+    vertical-align: inherit;
+}
+
+.controls {
+    background-color: antiquewhite;
+    max-height: 200px;
+    max-width: 150px;
+    border-radius: 25px;
+}
+
+.controls-right {
+    float: right;
+}
+
+
+.controls-left {
+    float: left;
+}
+
+.label {
+    padding-bottom: 20px;
+}
+
+.MuiBox-root {
+    margin: 8px 8px 8px 30px !important;
+    border-radius: 5px;
+}
+
+.legend {
+    color: white;
+    font-size: 12px;
+}
