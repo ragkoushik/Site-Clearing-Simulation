@@ -9,16 +9,23 @@
 }
 
 .site {
-    background-color: antiquewhite;
-    overflow: hidden;
     border-radius: 25px;
     margin-bottom: 20px;
 }
 
 .command {
-    overflow: hidden;
+    background-color: antiquewhite;;
     border-radius: 25px;
-    max-height: 300px;
+    max-width: 200px;
+    padding: 25px 5px 5px 5px;
+}
+
+.MultiFormLabel-root.Mui-focused{
+    color: antiquewhite !important;
+}
+
+.MuiOutlinedInput-input:focus {
+    padding: 18.5px 14px;
 }
 
 .MuiTableCell-root {
@@ -62,4 +69,23 @@
 .legend {
     color: white;
     font-size: 12px;
+}
+
+.bulldozer {
+    background: antiquewhite;
+    border-radius: 25px;
+}
+
+.report {
+    background: white;
+    border-radius: 25px;
+    color: #282c34;
+    float: left;
+    padding: 20px;
+    text-align: left;
+    max-width: 200px;
+}
+
+.MuiDialog-paperWidthSm {
+    height: 600px !important;
 }

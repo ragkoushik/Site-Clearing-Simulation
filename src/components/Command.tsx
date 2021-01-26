@@ -1,166 +1,203 @@
-import React, { Component } from 'react'
-import Terminal from 'terminal-in-react';
+import React from 'react'
+// import Terminal from 'terminal-in-react';
 import '../css/Simulator.css';
 import { connect } from "react-redux";
 import { vIsNewPosOnSite } from '../utils/validation';
 import { Bulldozer } from '../models';
-import { Redirect } from "react-router-dom";
 
-import IconButton from '@material-ui/core/IconButton';
+import { Grid, IconButton, Snackbar, TextField } from '@material-ui/core';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import CloseIcon from '@material-ui/icons/Close';
+import { Alert } from '@material-ui/lab';
+import { calculateFuelConsumptionAndUpdateGrid } from '../utils/reports'
 
-import { Grid } from '@material-ui/core';
+function Command(props: any, state: {}): JSX.Element {
+    const [open, setOpen] = React.useState(false);
+    const [commandError, setcommandError] = React.useState('');
 
-class Command extends Component<any, { redirect: string | null; }> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            redirect: null
-        };
-
-        this.advance = this.advance.bind(this);
-        this.leftTurn = this.leftTurn.bind(this);
-        this.rightTurn = this.rightTurn.bind(this);
-        this.quit = this.quit.bind(this);
-    }
-    render(): JSX.Element {
-        if (this.state.redirect) {
-            return <Redirect to={this.state.redirect ? this.state.redirect : "/"} />
-        } else {
-            return (
-                <div>
-                    <label className="label">Controls</label>
-                    <Grid container spacing={3}>
-                        <Grid item xs={8}>
-                            <div className="command">
-                                <Terminal
-                                color='green'
-                                backgroundColor='black'
-                                barColor='black'
-                                style={{ fontWeight: "bold", fontSize: "1em" }}
-                                commands={{
-                                    advance: this.advance,
-                                    left: this.leftTurn,
-                                    right: this.rightTurn,
-                                    quit: this.quit
-                                }}
-                                description={{
-                                    advance: 'this command takes a positive integer parameter to define the number of squares the bulldozer should move forwards (in whatever direction it is currently facing)',
-                                    left: 'turn the bulldozer (on the spot) 90 degrees to the left of the direction it is facing',
-                                    right: 'turn the bulldozer 90 degrees to the right',
-                                    quit: 'end the simulation'
-                                }}
-                                msg='Enter commands to operate bulldozer'
-                            />
-                            </div>
-                            
-                        </Grid>
-                        <Grid item xs={4}>
-                            <div className="controls">
-                                <Grid item xs={12}>
-                                    <IconButton  onClick={e => this.advance(['advance', "1"]) } aria-label="up" >
-                                        <KeyboardArrowUpIcon fontSize="large" />
-                                    </IconButton>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <IconButton  onClick={e => this.leftTurn()} className="controls-left" aria-label="left"  >
-                                        <KeyboardArrowLeftIcon fontSize="large" />
-                                    </IconButton>
-                                    <IconButton  onClick={e => this.rightTurn() } className="controls-right" aria-label="right"  >
-                                        <KeyboardArrowRightIcon fontSize="large" />
-                                    </IconButton>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <IconButton  onClick={e => this.quit() } aria-label="down">
-                                        <ExitToAppIcon fontSize="large" />
-                                    </IconButton>
-                                </Grid>
-                            </div>
-
-                        </Grid>
-                    </Grid>
-
-                </div>
-            );
+    const processCommand = (e: React.KeyboardEvent): void => {
+        if (e.key === 'Enter') {
+            const values = (e.target as any).value.trim().split(' ');
+            setcommandError('');
+            setOpen(false);
+            if (values.length > 1 && values[0].toLowerCase() === 'a') {
+                advance(values);
+            }
+            else {
+                if (values.length > 0 && values[0].toLowerCase() === 'l') {
+                    leftTurn();
+                } 
+                else if (values.length > 0 && values[0].toLowerCase() === 'r') {
+                    rightTurn();
+                } 
+                else if (values.length > 0 && values[0].toLowerCase() === 'q') {
+                    quit();
+                } 
+                else {
+                    setcommandError('Unknown command');
+                    setOpen(true);
+                }
+            } 
         }
     }
 
-    advance(params: string[]): void {
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const advance = (params: string[]): void => {
         const value = params[1] ? params[1] : null;
-        const result = vIsNewPosOnSite(this.props.site, this.props.bulldozer, Number(value));
-
-        console.log(this.props, result)
+        const result = vIsNewPosOnSite(props.site, { ...props.bulldozer }, Number(value));
+        console.log(result)
         if (result.valid) {
-            this.props.onUpdateBulldozerLocation(result.bulldozer);
+            // calculate fuel
+            const transaction = calculateFuelConsumptionAndUpdateGrid(props.site, result.bulldozer, props.history);
+            // update location
+            props.onUpdateBulldozerLocation(result.bulldozer, `advance ${params[1]}`);
+            // update grid
+            props.onUpdateSite(transaction.site);
+            // update fuel
+            props.onUpdateFuel(transaction.fuel);
+        } else {
+            // update location
+            props.onUpdateBulldozerLocation(result.bulldozer, `advance ${params[1]}`);
+            props.onBulldozerError(result.error);
+            if(result.reservedTreeFound){
+                props.onSetReservedTreeFound(result.reservedTreeFound);
+            }
+            setOpen(true);
         }
+
     }
 
-    leftTurn(): void {
-        const bulldozer = this.props.bulldozer;
-        console.log(bulldozer.facing)
-        switch (bulldozer.facing) {
+    const leftTurn = (): void => {
+        switch (props.bulldozer.facing) {
             case "EAST":
-                bulldozer.facing = "NORTH";
+                props.bulldozer.facing = "NORTH";
                 break;
             case "NORTH":
-                bulldozer.facing = "WEST";
+                props.bulldozer.facing = "WEST";
                 break;
             case "WEST":
-                bulldozer.facing = "SOUTH";
+                props.bulldozer.facing = "SOUTH";
                 break;
             case "SOUTH":
-                bulldozer.facing = "EAST";
+                props.bulldozer.facing = "EAST";
                 break;
             default:
-                bulldozer.facing = "EAST";
+                props.bulldozer.facing = "EAST";
         };
 
-        this.props.onUpdateBulldozerLocation(bulldozer);
+        props.onUpdateBulldozerLocation({ ...props.bulldozer }, `turn left`);
     }
 
-    rightTurn(): void {
-        const bulldozer = this.props.bulldozer;
-        switch (bulldozer.facing) {
+    const rightTurn = (): void => {
+        console.log(props.bulldozer.facing)
+        switch (props.bulldozer.facing) {
             case "EAST":
-                bulldozer.facing = "SOUTH";
+                props.bulldozer.facing = "SOUTH";
                 break;
             case "SOUTH":
-                bulldozer.facing = "WEST";
+                console.log('in')
+                props.bulldozer.facing = "WEST";
                 break;
             case "WEST":
-                bulldozer.facing = "NORTH";
+                props.bulldozer.facing = "NORTH";
                 break;
             case "NORTH":
-                bulldozer.facing = "EAST";
+                props.bulldozer.facing = "EAST";
                 break;
             default:
-                bulldozer.facing = "EAST";
+                props.bulldozer.facing = "EAST";
         };
 
-        this.props.onUpdateBulldozerLocation(bulldozer);
+        console.log(props.bulldozer)
+        props.onUpdateBulldozerLocation({ ...props.bulldozer }, `turn right`);
     };
 
-    quit(): void {
-        this.setState({ redirect: "/" });
+    const quit = (): void => {
+        props.onUpdateBulldozerLocation(props.bulldozer, `q`);
+        props.onBulldozerError(`The simulation has ended at your request`);
+        setOpen(true);
     };
 
-
+    return (
+        <div>
+            <label className="label">Controls</label>
+            <Grid container direction="row" justify="center" alignItems="center">
+                <div className="command">
+                    <Grid item xs={12}>
+                        <TextField label="Enter commands here"  onKeyDown={processCommand} variant="filled" />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <IconButton onClick={e => advance(['a', "1"])} aria-label="up" >
+                            <KeyboardArrowUpIcon fontSize="large" />
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <IconButton onClick={e => leftTurn()} className="controls-left" aria-label="left"  >
+                            <KeyboardArrowLeftIcon fontSize="large" />
+                        </IconButton>
+                        <IconButton onClick={e => rightTurn()} className="controls-right" aria-label="right"  >
+                            <KeyboardArrowRightIcon fontSize="large" />
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <IconButton onClick={e => quit()} aria-label="down">
+                            <ExitToAppIcon fontSize="large" />
+                        </IconButton>
+                    </Grid>
+                </div>
+            </Grid>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}
+            >
+                <Alert severity="error">
+                    <IconButton style={{ float: 'right' }} size="small" aria-label="close" color="inherit" onClick={e => handleClose()}>
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
+                    {props.error? props.error : commandError}
+                </Alert>
+            </Snackbar>
+        </div>
+    );
 }
 
 const mapStateToProps = (state: any) => {
+    console.log(state.bulldozer.facing)
     return {
         bulldozer: state.bulldozer,
-        site: state.site
+        site: state.site,
+        error: state.error,
+        history: state.history
     };
 };
 
 const mapDispachToProps = (dispatch: any) => {
     return {
-        onUpdateBulldozerLocation: (bulldozer: Bulldozer) => {
-            dispatch({ type: "UPDATE_BULLDOZER_LOCATION", value: bulldozer })
+        onUpdateBulldozerLocation: (bulldozer: Bulldozer, command: string): void => {
+            dispatch({ type: "UPDATE_BULLDOZER_LOCATION", value: { bulldozer, command } });
+        },
+        onSetReservedTreeFound: (reservedTreeFound: string): void => {
+            dispatch({ type: "UPDATE_RESERVED_TREE_FOUND", value: { reservedTreeFound } });
+        },
+        onBulldozerError: (error: string) => {
+            dispatch({ type: "ERROR", value: error });
+        },
+        onUpdateSite: (site: string[][]) => {
+            dispatch({ type: "UPDATE_SITE", value: site });
+        },
+        onUpdateFuel: (fuel: number) => {
+            dispatch({ type: "UPDATE_FUEL", value: fuel });
         }
     };
 };

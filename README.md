@@ -25,6 +25,3 @@ The build is minified and the filenames include the hashes.
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-## TODO
-1. Implement a Saas css.

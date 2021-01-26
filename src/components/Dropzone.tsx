@@ -58,7 +58,7 @@ class Dropzone extends Component<DropzoneType, { hightlight: boolean }> {
         this.setState({ hightlight: false })
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <div
                 className={`Dropzone ${this.state.hightlight ? 'Highlight' : ''}`}

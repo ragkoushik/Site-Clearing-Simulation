@@ -15,8 +15,14 @@ export function vSite(site: string): { valid: boolean; grid: string[][]; error: 
                 const cols = row.trim().split('');
                 if(valid){
                     if (length === 0 || length === cols.length) {
+                        // first cell can never have an unremovable tree, validate
+                        if(idx === 0 && cols[0] === 'T'){
+                            error = `Failed validation on line ${idx} column 0, square can't contain an unremovable tree`;
+                            valid = false;
+                        }
+
                         const validateLetters = diff(cols, ["o", "r", "t", "T"]);
-                        if(validateLetters && validateLetters.length > 0){
+                        if(valid && validateLetters && validateLetters.length > 0){
                             error = `Failed validation on line ${idx}, ${validateLetters.join(',')} ${validateLetters.length === 1 ? 'is not a valid input' : 'are not valid inputs'}`;
                             valid = false;
                         } else {
@@ -58,36 +64,106 @@ export function vAdvanceInput(input: string): boolean {
 export function vIsNewPosOnSite(grid: string[][], oldBulldozerLocation: Bulldozer, movePositions: number): {
     valid: Boolean;
     bulldozer: Bulldozer;
+    error: string | null;
+    end: boolean;
+    reservedTreeFound: boolean;
 } {
+    if(movePositions <= 0) {
+        return {
+            valid: false,
+            bulldozer: oldBulldozerLocation,
+            error: 'Cant advance backwords with negative values from cmd',
+            end: false,
+            reservedTreeFound: false
+        };
+    }
+
     const bulldozer = { ...oldBulldozerLocation}
     const gridSize = {
         x: grid[0].length,
         y: grid.length
     };
 
+    let gridsBetween: string[] = [];
     if(bulldozer.facing === "EAST") {
         bulldozer.yPos = bulldozer.yPos === -1 ? bulldozer.yPos + 1 : bulldozer.yPos;
         bulldozer.xPos = bulldozer.xPos + movePositions;
+        gridsBetween = simulatePassingThrough(grid, oldBulldozerLocation.xPos, bulldozer.xPos, 'x', bulldozer.yPos);
     } 
     else if(bulldozer.facing === "WEST") {
         bulldozer.xPos = bulldozer.xPos - movePositions;
+        gridsBetween = simulatePassingThrough(grid, oldBulldozerLocation.xPos, bulldozer.xPos, 'x', bulldozer.yPos);
     }
     else if(bulldozer.facing === "NORTH") {
         bulldozer.yPos = bulldozer.yPos - movePositions;
+        gridsBetween = simulatePassingThrough(grid, oldBulldozerLocation.yPos, bulldozer.yPos, 'y', bulldozer.xPos);
     }
     else if(bulldozer.facing === "SOUTH") {
         bulldozer.yPos = bulldozer.yPos + movePositions;
-    }
-    console.log(gridSize, movePositions)
-    if (bulldozer.xPos > -1 && bulldozer.yPos > -1 && bulldozer.xPos < gridSize.x && bulldozer.yPos < gridSize.y){
-        return {
-            valid: true,
-            bulldozer
-        }
+        gridsBetween = simulatePassingThrough(grid, oldBulldozerLocation.yPos, bulldozer.yPos, 'y', bulldozer.xPos);
     }
 
+    if (bulldozer.xPos > -1 && bulldozer.yPos > -1 && bulldozer.xPos < gridSize.x && bulldozer.yPos < gridSize.y){
+        if(gridsBetween && gridsBetween.length > 0 && gridsBetween.includes("T")){
+            return {
+                valid: false,
+                bulldozer: bulldozer,
+                error: 'An attempt was made pass through a protected square.',
+                end: true,
+                reservedTreeFound: true
+            };
+
+        } else {
+            if(gridsBetween && gridsBetween.length > 0){
+                // exclude the last cell that we are moving to
+                const considerGrids = gridsBetween.splice(gridsBetween.length, 1);
+                bulldozer.damage += considerGrids.filter(grid => grid === 't').length;
+            }
+
+            return {
+                valid: true,
+                bulldozer,
+                error: null,
+                end: false,
+                reservedTreeFound: false
+            };
+        }
+       
+    }
+    
     return {
         valid: false,
-        bulldozer: oldBulldozerLocation
+        bulldozer: oldBulldozerLocation,
+        error: 'An attempt was made to move the bulldozer out of site, ending simulation.',
+        end: true,
+        reservedTreeFound: false
     };
+}
+
+function simulatePassingThrough(grid: string[][], startPos: number, end: number, direction: string, fixedPos: number): string[] {
+
+    // simulate passing through squares
+    const gridsBetween = [];
+    if(end >= startPos) {
+        const i = startPos > 0 ? startPos : 1;
+        for(let start = i; start <= end ; start++){
+            if(direction === 'x' && grid[fixedPos] && grid[fixedPos][start]){
+                gridsBetween.push(grid[fixedPos][start]);
+            } 
+            else if(direction === 'y' && grid[start] && grid[start][fixedPos] ){
+                gridsBetween.push(grid[start][fixedPos]);
+            }
+        }    
+    } else {
+        for(let start = startPos; start >= end ; start--){
+            if(direction === 'x' && grid[fixedPos] && grid[fixedPos][start]){
+                gridsBetween.push(grid[fixedPos][start]);
+            } 
+            else if(direction === 'y' && grid[start] && grid[start][fixedPos] ){
+                gridsBetween.push(grid[start][fixedPos]);
+            }
+        } 
+    }
+    console.log(gridsBetween)
+    return gridsBetween;
 }

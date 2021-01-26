@@ -1,86 +1,93 @@
-import { Grid, CircularProgress } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@material-ui/core';
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import '../css/Simulator.css';
 import Site from './Site';
 import Command from './Command';
 import Bulldozer from './Bulldozer';
-import React, { useState, useEffect } from "react"
+import Report from './Report';
+import React from 'react';
 
 // local state
 interface SimulatorState {
-    redirect: string | null;
+    redirect: string;
 }
 
-function Simulator(props: any, state: SimulatorState) {
-    state = {
-        redirect: null
+function Simulator(props: any, state: SimulatorState): JSX.Element {
+    const [redirect, setRedirect] = React.useState('');
+
+    const handleClose = () => {
+        props.onSimulationEnd('destroy');
+        setRedirect("/");
     };
-    const [imgLoaded, setImgLoaded] = useState(false)
 
-    useEffect(() => {
-        const loadImage = (image: string) => new Promise((resolve, reject) => {
-            const loadImg = new Image();
-            loadImg.src = image;
-            // wait 2 seconds to simulate loading time
-            loadImg.onload = () => setTimeout(() => {
-                resolve(image);
-            }, 2000);
-
-            loadImg.onerror = err => reject(err);
-        })
-
-        loadImage('https://www.iconshock.com/image/RealVista/Construction/bulldozer')
-            .then(() => setImgLoaded(true))
-            .catch(err => console.log("Failed to load images", err))
-    }, [])
-
-    if (!props.site || props.site.length <= 0) {
-        return <Redirect to={state.redirect ? state.redirect : "/"} />
+    if (!props.site || props.site.length <= 0 || redirect !== '') {
+        return <Redirect to={redirect ? redirect : "/"} />
     }
     else {
-        if (!imgLoaded) {
-            return <div className="center"><CircularProgress disableShrink /></div>
-        }
-        else {
-            return (
-                <div className="center">
-                    <div className="simulator">
-                        <label className="label">Simulator</label>
-                        {props.bulldozer.xPos === -1 && props.bulldozer.yPos === -1 ?
-                            <Grid container spacing={3}>
-                                <Grid item xs={1}>
+        return (
+            <div className="center">
+                <div className="simulator">
+                    <label className="label">Simulator</label>
+                    {props.bulldozer.xPos === -1 && props.bulldozer.yPos === -1 ?
+                        <Grid container spacing={3}>
+                            <Grid item xs={1}>
+                                <div className="bulldozer">
                                     <Bulldozer />
-                                </Grid>
-                                <Grid item xs={11}>
-                                    <Site />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Command />
-                                </Grid>
-                            </Grid> :
-                            <Grid container spacing={3}>
-                                <Grid item xs={12}>
-                                    <Site />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Command />
-                                </Grid>
+                                </div>
                             </Grid>
-                        }
-                    </div>
-                </div>)
-        }
+                            <Grid item xs={11}>
+                                <Site />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Command />
+                            </Grid>
+                        </Grid> :
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Site />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Command />
+                            </Grid>
+                        </Grid>
+                    }
+                    {props.error &&
+                        <div>
+                            <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={true}>
+                                <DialogTitle id="simple-dialog-title">Simulatior ended</DialogTitle>
+                                <DialogContent>
+                                <Report />
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={handleClose} color="primary">
+                                        Close
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+
+                        </div>
+                    }
+                </div>
+            </div>)
     }
 }
 
 const mapStateToProps = (state: any) => {
     return {
         site: state.site,
-        bulldozer: state.bulldozer
+        bulldozer: state.bulldozer,
+        error: state.error
     };
 };
 
+const mapDispachToProps = (dispatch: any) => {
+    return {
+      onSimulationEnd: (data: string) => dispatch({ type: "DESTROY", value: data })
+    };
+  };
+
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispachToProps
 )(Simulator);

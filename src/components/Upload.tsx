@@ -6,6 +6,9 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Alert } from '@material-ui/lab';
 import {vSite} from '../utils/validation'
+import { IconButton, Snackbar } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+
 // local state
 interface UploadState {
     files: any;
@@ -13,6 +16,7 @@ interface UploadState {
     timePassed: boolean;
     redirect: string | null;
     error: string | null;
+    open: boolean;
 }
 
 class Upload extends Component<any, UploadState> {
@@ -23,12 +27,13 @@ class Upload extends Component<any, UploadState> {
             files: [],
             accept: ".txt",
             redirect: null,
-            error: null
+            error: null,
+            open: false
         };
         this.readFileContents = this.readFileContents.bind(this);
     }
 
-    render() {
+    render(): JSX.Element  {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
@@ -39,11 +44,7 @@ class Upload extends Component<any, UploadState> {
             }, 1000)
 
             // disappears after 2 seconds - toast notification
-            if(this.state.error){
-                setTimeout((): void => {
-                    this.setState({ error: null })
-                }, 2000)
-            }
+            
 
             let renderTemplate: any;
             if (!this.state.timePassed) {
@@ -74,8 +75,26 @@ class Upload extends Component<any, UploadState> {
                                 })}
                             </div>
                         </div>
-                        <span className="title">Begin by uploading a file</span>
-                        {this.state.error ? <Alert className="Alert" severity="error">{this.state.error }</Alert> : null }
+                        <span className="title">Begin by uploading a file </span>
+                        {this.state.error ? 
+                            <Snackbar
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'center',
+                                }}
+                                open={this.state.open}
+                                autoHideDuration={6000}
+                                onClose={this.handleClose}
+                            >
+                                <Alert className="Alert" severity="error">
+                                    <IconButton style={{float: 'right'}} size="small" aria-label="close" color="inherit" onClick={e => this.handleClose()}>
+                                        <CloseIcon fontSize="small" />
+                                    </IconButton>
+                                    {this.state.error } 
+                                </Alert> 
+                               
+                            </Snackbar>
+                        : null }
                     </div>
                 </div>;
             }
@@ -87,6 +106,12 @@ class Upload extends Component<any, UploadState> {
             );
         }
     }
+    
+    handleClose(): void{
+        if(this?.state?.open){
+            this.setState({open:false});
+        }
+    };
 
     readFileContents(file: File): void {
         const reader = new FileReader();
@@ -98,7 +123,7 @@ class Upload extends Component<any, UploadState> {
                 this.props.onCreateSite(validate.grid);
                 this.setState({ redirect: "/site" });
             } else {
-                this.setState({ error: validate.error})
+                this.setState({ error: validate.error, open: true})
             }
         };
 
