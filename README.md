@@ -47,7 +47,17 @@ ootooooooo oooooooToo rrrooooToo rrrroooooo rrrrrtoooo
 **Store**
 - reducer - adds to store
 - action - all reducer actions are defined here
-      
+
+**Tests**
+All application specific test cases are defined here
+
+**Models**
+- model - has all interfaces for the app defined
+
+## TODO
+ Out of scope but nice to do
+- Replace all css files as saas files and replace hardcoded px to be computed at run time.
+- Make the UI controls more user fiendly - Eg: Autofocus on the textbox for command entry, clear previously entered commands etc
 
 ## Available Scripts
 
