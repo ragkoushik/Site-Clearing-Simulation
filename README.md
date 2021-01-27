@@ -30,7 +30,7 @@ buttons”. Commands are executed as soon as the user presses “Enter” or pus
 The site map is defined by a text file with one character per square of the site. Each row must have the same number of characters. Plain land is marked with the letter ‘o’, rocky land is marked with the letter ‘r’, removable trees are marked with the letter ‘t’, and trees that must be preserved are marked with the letter ‘T’. For example, the following describes a site that is 10 squares wide and 5 squares deep:
 ootooooooo oooooooToo rrrooooToo rrrroooooo rrrrrtoooo
 
-**Components**
+## Components
 - Bulldozer - an instance of bulldozer
 - Site - renders the site view based on the uploaded file
 - Command - an interface to input commands from an input box or visual control buttons
@@ -39,35 +39,36 @@ ootooooooo oooooooToo rrrooooToo rrrroooooo rrrrrtoooo
 - Upload - Component to parse a text file, validate it and create site map aka grid.
 - Report - Component to view costs and breakdowns on a popup after termination
 
-**Utils**
+## Utils
 - constants - all business rules related data eg: costs, commands, accepted file types are configured here
 - validation - all validations are done here
 - reports - reporting calculations are done here 
 
-**Store**
+## Store
 - reducer - adds to store
 - action - all reducer actions are defined here
 
-**Tests**
+## Tests
 All application specific test cases are defined here
 
-**Models**
+## Models
 - model - has all interfaces for the app defined
 
-**Legend**
- **Bulldozer**  <img width="100" src="https://image.flaticon.com/icons/png/512/46/46818.png">
+## Legend
+
+<img width="100" src="https://image.flaticon.com/icons/png/512/46/46818.png"> **Bulldozer**  
  
   
-**Plan land (o)**  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/o.png?raw=true">
+<img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/o.png?raw=true">**Plan land (o)**  
 
   
-**Rocky land (r)**  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/r.png?raw=true">
+<img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/r.png?raw=true">**Rocky land (r)**  
   
   
-**Tree (t)**  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/t.png?raw=true">
+<img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/t.png?raw=true">**Tree (t)**  
  
  
-**Protected Tree (T)** <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.jpg?raw=true">
+<img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.jpg?raw=true">**Protected Tree (T)** 
  
   
 ## TODO
