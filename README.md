@@ -69,7 +69,12 @@ All application specific test cases are defined here
  
  
 <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.jpg?raw=true">**Protected Tree (T)** 
- 
+
+## Allowed Commands
+- `a 1` - advance by 1 position- Note there has to be a spaec between a and 1
+- `l` - Turn left
+- `r` - Turn right
+- `q` - Quit simulation
   
 ## TODO
 Out of scope but nice to do
