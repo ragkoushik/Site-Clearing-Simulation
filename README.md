@@ -55,18 +55,21 @@ All application specific test cases are defined here
 - model - has all interfaces for the app defined
 
 **Legend**
+  <img width="100" src="https://image.flaticon.com/icons/png/512/46/46818.png">
+  **Bulldozer**
+  
+  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/o.png?raw=true">
   **Plan land (o)**
-  <img width="50" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/o.png?raw=true">
-
+  
+  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/r.png?raw=true">
   **Rocky land (r)**
-  <img width="50" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/r.png?raw=true">
-
+  
+  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/t.png?raw=true">
   **Tree (t)**
-  <img width="50" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/t.png?raw=true">
-
+ 
+  <img width="100" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.jpg?raw=true">
   **Protected Tree (T)**
-  <img width="50" src="https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.jpg?raw=true">
-
+  
 ## TODO
 Out of scope but nice to do
 - Replace all css files as saas files and replace hardcoded px to be computed at run time.
