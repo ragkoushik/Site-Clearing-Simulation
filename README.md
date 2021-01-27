@@ -54,6 +54,12 @@ All application specific test cases are defined here
 **Models**
 - model - has all interfaces for the app defined
 
+**Legend**
+![alt text](https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/o.png?raw=true | width=50) - Plan land (o)
+![alt text](https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/r.png?raw=true | width=50) - Rocky land (r)
+![alt text](https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/t.png?raw=true | width=50) - Tree (t)
+![alt text](https://github.com/ragkoushik/Site-Clearing-Simulation/blob/main/public/T.png?raw=true | width=50) - Protected Tree (T)
+
 ## TODO
  Out of scope but nice to do
 - Replace all css files as saas files and replace hardcoded px to be computed at run time.
