@@ -1,4 +1,4 @@
-import {Bulldozer} from '../models';
+import {BulldozerType} from '../models';
 
 export function vSite(site: string): { valid: boolean; grid: string[][]; error: string; } {
     let valid = true;
@@ -54,16 +54,16 @@ function diff (arr1: string[], arr2: string[]): string[]  {
 }
 
 export function vAdvanceInput(input: string): boolean {
-    if(!isNaN(Number(input))){
+    if(!isNaN(Number(input)) && Number(input) > 0){
         return true;
     }
 
     return false;
 }
 
-export function vIsNewPosOnSite(grid: string[][], oldBulldozerLocation: Bulldozer, movePositions: number): {
+export function vIsNewPosOnSite(grid: string[][], oldBulldozerLocation: BulldozerType, movePositions: number): {
     valid: Boolean;
-    bulldozer: Bulldozer;
+    bulldozer: BulldozerType;
     error: string | null;
     end: boolean;
     reservedTreeFound: boolean;
@@ -114,12 +114,11 @@ export function vIsNewPosOnSite(grid: string[][], oldBulldozerLocation: Bulldoze
             };
 
         } else {
-            if(gridsBetween && gridsBetween.length > 0){
-                // exclude the last cell that we are moving to
-                const considerGrids = gridsBetween.splice(gridsBetween.length, 1);
-                bulldozer.damage += considerGrids.filter(grid => grid === 't').length;
+            if(gridsBetween && gridsBetween.length > 0 && movePositions > 1){
+                // remove the new cell the bulldozer is supposed to be in after this transaction
+                gridsBetween.splice(-1, 1)
+                bulldozer.damage += gridsBetween.filter(grid => grid === 't' || grid === 'r').length;
             }
-
             return {
                 valid: true,
                 bulldozer,
@@ -164,6 +163,5 @@ function simulatePassingThrough(grid: string[][], startPos: number, end: number,
             }
         } 
     }
-    console.log(gridsBetween)
     return gridsBetween;
 }

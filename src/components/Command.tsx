@@ -3,7 +3,7 @@ import React from 'react'
 import '../css/Simulator.css';
 import { connect } from "react-redux";
 import { vIsNewPosOnSite } from '../utils/validation';
-import { Bulldozer } from '../models';
+import { BulldozerType, CommandStateInterface } from '../models';
 
 import { Grid, IconButton, Snackbar, TextField } from '@material-ui/core';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -13,8 +13,9 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import { calculateFuelConsumptionAndUpdateGrid } from '../utils/reports'
+import { actionOnBulldozerError, actionOnSetReservedTreeFound, actionOnUpdateBulldozerLocation, actionOnUpdateSite, actionOnUpdateFuel } from '../store/actions';
 
-function Command(props: any, state: {}): JSX.Element {
+function Command(props: CommandStateInterface): JSX.Element {
     const [open, setOpen] = React.useState(false);
     const [commandError, setcommandError] = React.useState('');
 
@@ -51,10 +52,10 @@ function Command(props: any, state: {}): JSX.Element {
     const advance = (params: string[]): void => {
         const value = params[1] ? params[1] : null;
         const result = vIsNewPosOnSite(props.site, { ...props.bulldozer }, Number(value));
-        console.log(result)
+        // console.log(result)
         if (result.valid) {
             // calculate fuel
-            const transaction = calculateFuelConsumptionAndUpdateGrid(props.site, result.bulldozer, props.history);
+            const transaction = calculateFuelConsumptionAndUpdateGrid(props.site, result.bulldozer, Number(value));
             // update location
             props.onUpdateBulldozerLocation(result.bulldozer, `advance ${params[1]}`);
             // update grid
@@ -95,13 +96,13 @@ function Command(props: any, state: {}): JSX.Element {
     }
 
     const rightTurn = (): void => {
-        console.log(props.bulldozer.facing)
+        // console.log(props.bulldozer.facing)
         switch (props.bulldozer.facing) {
             case "EAST":
                 props.bulldozer.facing = "SOUTH";
                 break;
             case "SOUTH":
-                console.log('in')
+                // console.log('in')
                 props.bulldozer.facing = "WEST";
                 break;
             case "WEST":
@@ -114,7 +115,7 @@ function Command(props: any, state: {}): JSX.Element {
                 props.bulldozer.facing = "EAST";
         };
 
-        console.log(props.bulldozer)
+        // console.log(props.bulldozer)
         props.onUpdateBulldozerLocation({ ...props.bulldozer }, `turn right`);
     };
 
@@ -173,7 +174,7 @@ function Command(props: any, state: {}): JSX.Element {
 }
 
 const mapStateToProps = (state: any) => {
-    console.log(state.bulldozer.facing)
+    // console.log(state.bulldozer.facing)
     return {
         bulldozer: state.bulldozer,
         site: state.site,
@@ -184,20 +185,20 @@ const mapStateToProps = (state: any) => {
 
 const mapDispachToProps = (dispatch: any) => {
     return {
-        onUpdateBulldozerLocation: (bulldozer: Bulldozer, command: string): void => {
-            dispatch({ type: "UPDATE_BULLDOZER_LOCATION", value: { bulldozer, command } });
+        onUpdateBulldozerLocation: (bulldozer: BulldozerType, command: string): void => {
+            dispatch(actionOnUpdateBulldozerLocation(bulldozer, command));
         },
         onSetReservedTreeFound: (reservedTreeFound: string): void => {
-            dispatch({ type: "UPDATE_RESERVED_TREE_FOUND", value: { reservedTreeFound } });
+            dispatch(actionOnSetReservedTreeFound(reservedTreeFound));
         },
-        onBulldozerError: (error: string) => {
-            dispatch({ type: "ERROR", value: error });
+        onBulldozerError: (error: string): void => {
+            dispatch(actionOnBulldozerError(error));
         },
-        onUpdateSite: (site: string[][]) => {
-            dispatch({ type: "UPDATE_SITE", value: site });
+        onUpdateSite: (site: string[][]): void => {
+            dispatch(actionOnUpdateSite(site));
         },
-        onUpdateFuel: (fuel: number) => {
-            dispatch({ type: "UPDATE_FUEL", value: fuel });
+        onUpdateFuel: (fuel: number): void => {
+            dispatch(actionOnUpdateFuel(fuel));
         }
     };
 };

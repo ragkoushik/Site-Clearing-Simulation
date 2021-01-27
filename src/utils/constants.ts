@@ -56,3 +56,5 @@ export const costs: { [key: string]: number } =  {
 }
 
 export const commands: string[] = ["a", "r", "l", "q"];
+
+export const acceptedFileTypes: string[] = [".txt"]

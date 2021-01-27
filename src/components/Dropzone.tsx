@@ -1,14 +1,10 @@
 import React, { Component } from 'react'
 import '../css/Dropzone.css'
+import { DropzonePropsInterface, DropzoneStateInterface } from '../models';
 
-interface DropzoneType {
-    filesAdded: any;
-    accept: string;
-}
-
-class Dropzone extends Component<DropzoneType, { hightlight: boolean }> {
+class Dropzone extends Component<DropzonePropsInterface, DropzoneStateInterface> {
     private fileInputRef: React.RefObject<HTMLInputElement> = React.createRef();
-    constructor(props: DropzoneType) {
+    constructor(props: DropzonePropsInterface) {
         super(props)
         this.state = { hightlight: false }
 
@@ -71,7 +67,7 @@ class Dropzone extends Component<DropzoneType, { hightlight: boolean }> {
                     ref={this.fileInputRef}
                     className="FileInput"
                     type="file"
-                    accept={this.props.accept}
+                    accept={this.props.accept.join(';')}
                     onChange={this.onFilesAdded}
                 />
                 <img

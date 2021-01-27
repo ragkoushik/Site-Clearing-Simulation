@@ -89,3 +89,7 @@
 .MuiDialog-paperWidthSm {
     height: 600px !important;
 }
+
+.report {
+    margin-top: 20px;
+}

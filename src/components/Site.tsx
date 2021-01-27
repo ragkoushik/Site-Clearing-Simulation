@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import '../css/Simulator.css';
 import Bulldozer from './Bulldozer';
 import { tiles } from '../utils/constants'
+import { SiteStateInterface } from '../models';
 
-function Site(props: any): JSX.Element  {
+function Site(props: SiteStateInterface): JSX.Element  {
     const defaultProps = {
         m: 1,
         style: {

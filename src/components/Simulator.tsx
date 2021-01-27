@@ -7,15 +7,11 @@ import Command from './Command';
 import Bulldozer from './Bulldozer';
 import Report from './Report';
 import React from 'react';
+import { actionOnSimulationEnd } from '../store/actions';
+import { SimulatorPropsInterface, SimulatorStateInterface } from '../models';
 
-// local state
-interface SimulatorState {
-    redirect: string;
-}
-
-function Simulator(props: any, state: SimulatorState): JSX.Element {
+function Simulator(props: SimulatorPropsInterface, state: SimulatorStateInterface): JSX.Element {
     const [redirect, setRedirect] = React.useState('');
-
     const handleClose = () => {
         props.onSimulationEnd('destroy');
         setRedirect("/");
@@ -54,10 +50,10 @@ function Simulator(props: any, state: SimulatorState): JSX.Element {
                     }
                     {props.error &&
                         <div>
-                            <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={true}>
-                                <DialogTitle id="simple-dialog-title">Simulatior ended</DialogTitle>
+                            <Dialog onClose={handleClose} open={true}>
+                                <DialogTitle>Simulator ended</DialogTitle>
                                 <DialogContent>
-                                <Report />
+                                    <Report />
                                 </DialogContent>
                                 <DialogActions>
                                     <Button onClick={handleClose} color="primary">
@@ -83,9 +79,9 @@ const mapStateToProps = (state: any) => {
 
 const mapDispachToProps = (dispatch: any) => {
     return {
-      onSimulationEnd: (data: string) => dispatch({ type: "DESTROY", value: data })
+        onSimulationEnd: (data: string) => dispatch(actionOnSimulationEnd(data))
     };
-  };
+};
 
 export default connect(
     mapStateToProps,

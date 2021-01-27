@@ -1,8 +1,9 @@
 import { connect } from "react-redux";
 import '../css/Simulator.css'
+import { BulldozerType } from "../models";
 import { facingAngle } from '../utils/constants';
 
-function Bulldozer(props: any): JSX.Element  {
+function Bulldozer(props: {bulldozer: BulldozerType}): JSX.Element  {
     const transform = {
         transform: `scaleX(${facingAngle[props.bulldozer.facing].scaleX}) scaleY(${facingAngle[props.bulldozer.facing].scaleY}) rotate(${facingAngle[props.bulldozer.facing].angle}deg)`
     };

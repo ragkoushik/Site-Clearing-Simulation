@@ -5,47 +5,37 @@ import Dropzone from './Dropzone'
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { Alert } from '@material-ui/lab';
-import {vSite} from '../utils/validation'
+import { vSite } from '../utils/validation'
 import { IconButton, Snackbar } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { actionOnCreateSite } from '../store/actions';
+import { UploadPropsInterface, UploadStateInterface } from '../models';
+import { acceptedFileTypes } from '../utils/constants';
 
-// local state
-interface UploadState {
-    files: any;
-    accept: string;
-    timePassed: boolean;
-    redirect: string | null;
-    error: string | null;
-    open: boolean;
-}
-
-class Upload extends Component<any, UploadState> {
+export class Upload extends Component<UploadPropsInterface, UploadStateInterface> {
+    private timer: any;
     constructor(props: any) {
         super(props);
         this.state = {
             timePassed: false,
             files: [],
-            accept: ".txt",
+            accept: acceptedFileTypes,
             redirect: null,
             error: null,
             open: false
         };
         this.readFileContents = this.readFileContents.bind(this);
     }
-
-    render(): JSX.Element  {
+    componentWillUnmount() {
+        this.clearTimer();
+    }
+    render(): JSX.Element {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
         else {
             // Logo disappears after 2 seconds
-            setTimeout((): void => {
-                this.setState({ timePassed: true })
-            }, 1000)
-
-            // disappears after 2 seconds - toast notification
-            
-
+            this.startTimer();
             let renderTemplate: any;
             if (!this.state.timePassed) {
                 renderTemplate = <header className="center">
@@ -76,7 +66,7 @@ class Upload extends Component<any, UploadState> {
                             </div>
                         </div>
                         <span className="title">Begin by uploading a file </span>
-                        {this.state.error ? 
+                        {this.state.error ?
                             <Snackbar
                                 anchorOrigin={{
                                     vertical: 'bottom',
@@ -87,14 +77,14 @@ class Upload extends Component<any, UploadState> {
                                 onClose={this.handleClose}
                             >
                                 <Alert className="Alert" severity="error">
-                                    <IconButton style={{float: 'right'}} size="small" aria-label="close" color="inherit" onClick={e => this.handleClose()}>
+                                    <IconButton style={{ float: 'right' }} size="small" aria-label="close" color="inherit" onClick={e => this.handleClose()}>
                                         <CloseIcon fontSize="small" />
                                     </IconButton>
-                                    {this.state.error } 
-                                </Alert> 
-                               
+                                    {this.state.error}
+                                </Alert>
+
                             </Snackbar>
-                        : null }
+                            : null}
                     </div>
                 </div>;
             }
@@ -106,10 +96,23 @@ class Upload extends Component<any, UploadState> {
             );
         }
     }
-    
-    handleClose(): void{
-        if(this?.state?.open){
-            this.setState({open:false});
+    startTimer() {
+        this.timer = setTimeout(() => {
+            this.setState({ timePassed: true })
+        }, 1000);
+
+    }
+
+    clearTimer() {
+        // Handle an undefined timer rather than null
+        if(this.timer) {
+            clearTimeout(this.timer)
+        } 
+    }
+
+    handleClose(): void {
+        if (this?.state?.open) {
+            this.setState({ open: false });
         }
     };
 
@@ -118,12 +121,11 @@ class Upload extends Component<any, UploadState> {
         reader.onload = async (e): Promise<void> => {
             const fileContents = (e.target as any).result;
             const validate = vSite(fileContents);
-            console.log(validate)
-            if(validate.valid){
+            if (validate.valid) {
                 this.props.onCreateSite(validate.grid);
                 this.setState({ redirect: "/site" });
             } else {
-                this.setState({ error: validate.error, open: true})
+                this.setState({ error: validate.error, open: true })
             }
         };
 
@@ -132,21 +134,21 @@ class Upload extends Component<any, UploadState> {
         }
     }
 
-    
+
 }
 
 const mapStateToProps = (state: any) => {
     return {
         site: state.site
     };
-  };
-  
-  const mapDispachToProps = (dispatch: any) => {
+};
+
+const mapDispachToProps = (dispatch: any) => {
     return {
-      onCreateSite: (data: string) => dispatch({ type: "CREATE_SITE", value: data })
+        onCreateSite: (data: string) => dispatch(actionOnCreateSite(data))
     };
-  };
-  export default connect(
+};
+export default connect(
     mapStateToProps,
     mapDispachToProps
-  )(Upload);
+)(Upload);
